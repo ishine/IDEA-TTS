@@ -70,8 +70,8 @@ def main():
     print('Initializing Inference Process..')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--se_ckpt_path', default='speaker_encoder/checkpoints/model_se.pth.tar')
-    parser.add_argument('--se_conf_path', default='speaker_encoder/checkpoints/config_se.json')
+    parser.add_argument('--se_ckpt_path', default='checkpoints/ckpt_se/model_se.pth.tar')
+    parser.add_argument('--se_conf_path', default='checkpoints/ckpt_se/config_se.json')
     parser.add_argument('--input_text_file', default='filelists/tts_test.txt')
     parser.add_argument('--input_wavs_dir', default='/home/yxlu/datasets/DDS')
     parser.add_argument('--output_wavs_dir', default='generated_files')
