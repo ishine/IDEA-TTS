@@ -221,7 +221,7 @@ class PosteriorEncoder(nn.Module):
         return z, m, logs, x_mask
 
 
-class EnvironmentEstimator(nn.Module):
+class SpectrogramEnhancer(nn.Module):
     def __init__(self, spec_channels, hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout):
         super().__init__()
         self.spec_channels = spec_channels
@@ -461,7 +461,7 @@ class SynthesizerTrn(nn.Module):
         self.dec = Generator(inter_channels, resblock, resblock_kernel_sizes, resblock_dilation_sizes, upsample_rates, upsample_initial_channel, upsample_kernel_sizes, gin_channels=gin_channels)
         self.enc_q = PosteriorEncoder(spec_channels, inter_channels, hidden_channels, 5, 1, 16, gin_channels=gin_channels)
         self.flow = ResidualCouplingBlock(inter_channels, hidden_channels, 5, 1, 4, gin_channels=gin_channels)
-        self.env_estimator = EnvironmentEstimator(spec_channels, hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout)
+        self.spec_enhancer = SpectrogramEnhancer(spec_channels, hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout)
 
         if use_sdp:
             self.dp = StochasticDurationPredictor(hidden_channels, 192, 3, 0.5, 4, gin_channels=gin_channels)
@@ -470,13 +470,12 @@ class SynthesizerTrn(nn.Module):
 
         self.enc_env = ECAPA_TDNN(input_channel=spec_channels, C=512, output_channel=gin_channels)
 
-
     def forward(self, x, x_lengths, y_env, y_lengths, y_embedd):
 
         x, m_p, logs_p, x_mask = self.enc_p(x, x_lengths)
 
         y_env_compressed = torch.pow(y_env, self.compress_factor)
-        env_mask = self.env_estimator(y_env_compressed, y_lengths)
+        env_mask = self.spec_enhancer(y_env_compressed, y_lengths)
         y_enhanced = torch.pow(y_env_compressed * env_mask, 1.0/self.compress_factor)
 
         g_spk = y_embedd.unsqueeze(-1)
@@ -519,12 +518,11 @@ class SynthesizerTrn(nn.Module):
 
         return o_cln, o_env, y_enhanced, l_length, attn, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q)
 
-
     def infer(self, x, x_lengths, y_env, y_lengths, y_embedd, noise_scale=1, length_scale=1, noise_scale_w=1., max_len=None):
         x, m_p, logs_p, x_mask = self.enc_p(x, x_lengths)
 
         y_env_compressed = torch.pow(y_env, self.compress_factor)
-        env_mask = self.env_estimator(y_env_compressed, y_lengths)
+        env_mask = self.spec_enhancer(y_env_compressed, y_lengths)
         y_enhanced = torch.pow(y_env_compressed * env_mask, 1.0/self.compress_factor)
 
         g_spk = y_embedd.unsqueeze(-1)
@@ -552,10 +550,9 @@ class SynthesizerTrn(nn.Module):
 
         return o_cln, o_env, y_enhanced, attn, y_mask, (z, z_p, m_p, logs_p)
     
-
     def se(self, y, y_lengths, y_embedd):
         y_compressed = torch.pow(y, self.compress_factor)
-        env_mask = self.env_estimator(y_compressed, y_lengths)
+        env_mask = self.spec_enhancer(y_compressed, y_lengths)
         y_enhanced = torch.pow(y_compressed * env_mask, 1.0/self.compress_factor)
         g_spk = y_embedd.unsqueeze(-1)
 
@@ -565,13 +562,12 @@ class SynthesizerTrn(nn.Module):
 
         return o_enhanced, env_mask, y_enhanced, y_mask, z
 
-
     def environment_conversion(self, y_src, y_tgt, y_src_lengths, y_tgt_lengths, y_src_embedd):
         y_src_compressed = torch.pow(y_src, self.compress_factor)
-        y_src_mask = self.env_estimator(y_src_compressed, y_src_lengths)
+        y_src_mask = self.spec_enhancer(y_src_compressed, y_src_lengths)
         y_src_enhanced = torch.pow(y_src_compressed * y_src_mask, 1.0/self.compress_factor)
         y_tgt_compressed = torch.pow(y_tgt, self.compress_factor)
-        env_mask_tgt = torch.pow(self.env_estimator(y_tgt_compressed, y_tgt_lengths), 1.0/self.compress_factor)
+        env_mask_tgt = torch.pow(self.spec_enhancer(y_tgt_compressed, y_tgt_lengths), 1.0/self.compress_factor)
 
         g_env_tgt = self.enc_env(env_mask_tgt, y_tgt_lengths).unsqueeze(-1)
         g_src = y_src_embedd.unsqueeze(-1)
@@ -581,10 +577,9 @@ class SynthesizerTrn(nn.Module):
         o_hat_clean = self.dec(z * y_mask, g_spk=g_src, g_env=None)
         return o_hat, o_hat_clean, y_src_mask, y_src_enhanced, y_mask, z
     
-
     def extract_env_embedding(self, y_env, y_lengths):
         y_env_compressed = torch.pow(y_env, self.compress_factor)
-        env_mask = self.env_estimator(y_env_compressed, y_lengths)
+        env_mask = self.spec_enhancer(y_env_compressed, y_lengths)
         g_env = self.enc_env(torch.pow(env_mask, 1.0/self.compress_factor), y_lengths)
 
         return g_env
