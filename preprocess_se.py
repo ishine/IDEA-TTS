@@ -5,8 +5,8 @@ from speaker_encoder.speakers import SpeakerManager
 from tqdm import tqdm
 
 ### Speaker Encoder Initializing
-SPEAKER_ENCODER_CHECKPOINT_PATH = ("speaker_encoder/checkpoints/model_se.pth.tar")
-SPEAKER_ENCODER_CONFIG_PATH = "speaker_encoder/checkpoints/config_se.json"
+SPEAKER_ENCODER_CHECKPOINT_PATH = ("checkpoints/ckpt_se/model_se.pth.tar")
+SPEAKER_ENCODER_CONFIG_PATH = "checkpoints/ckpt_se/config_se.json"
 USE_CUDA = torch.cuda.is_available()
 SE_speaker_manager = SpeakerManager(encoder_model_path=SPEAKER_ENCODER_CHECKPOINT_PATH, encoder_config_path=SPEAKER_ENCODER_CONFIG_PATH, use_cuda=USE_CUDA)
 
