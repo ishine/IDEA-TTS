@@ -27,7 +27,7 @@ This paper proposes IDEA-TTS, an Incremental Disentanglement-based Environment-A
        $ python trim_silence.py
        ```
 4. Extract speaker embeddings:
-   1. Download the checkpoint files of the speaker encoder and pretrained IDEA-TTS, and move them to the `checkpoint` dir.
+   1. Download the [checkpoint files](https://drive.google.com/drive/folders/1hGdJFUOwSrN8ClieUSvfIXyxIcilOMCo?usp=share_link) of the speaker encoder and pretrained IDEA-TTS, and move them to the `checkpoint` dir.
    2. Preprocess the dataset to extract speaker embeddings
        ```
        $ conda activate yourtts
