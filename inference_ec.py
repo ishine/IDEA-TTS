@@ -7,7 +7,7 @@ from models.model import SynthesizerTrn
 from speaker_encoder.speakers import SpeakerManager
 from text.symbols import symbols
 from datasets.mel_processing import spectrogram_torch
-from rich.progress import track
+from tqdm import tqdm
 
 hps = None
 device = None
@@ -40,7 +40,7 @@ def inference(a):
     os.makedirs(a.output_wavs_dir, exist_ok=True)
 
     with torch.no_grad():
-        for i in track(range(len(audio_paths_src))):
+        for i in tqdm(range(len(audio_paths_src))):
             env_wav_path = os.path.join(a.input_wavs_dir, audio_paths_src[i]+'.flac')
             tgt_wav_path = os.path.join(a.input_wavs_dir, audio_paths_tgt[i]+'.flac')
             out_wav_path = os.path.join(a.output_wavs_dir, audio_paths_src[i].split(os.sep)[-1].replace('_livingroom1_Uber_ch1', '')+'.wav')
