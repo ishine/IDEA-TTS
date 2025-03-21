@@ -29,7 +29,7 @@ def environment_conversion_sample(src_wav_path, tgt_wav_path, out_wav_path):
     spk_embedd = spk_enc.compute_embedding_from_clip(src_wav_path)
     spk_embedd = torch.FloatTensor(spk_embedd).unsqueeze(0).to(device)
 
-    audio_env = net_g.environment_conversion(spec_src, spec_tgt, spec_src_lengths, spec_tgt_lengths, spk_embedd)[1][0,0].data.unsqueeze(0).cpu()
+    audio_env = net_g.environment_conversion(spec_src, spec_tgt, spec_src_lengths, spec_tgt_lengths, spk_embedd)[0][0,0].data.unsqueeze(0).cpu()
     torchaudio.save(out_wav_path, audio_env, hps.data.sampling_rate, encoding='PCM_S', bits_per_sample=16)
 
 
