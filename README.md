@@ -7,6 +7,7 @@ This paper proposes IDEA-TTS, an Incremental Disentanglement-based Environment-A
 **We provide our implementation as open source in this repository. Audio samples can be found at the  [demo website](http://yxlu-0102.github.io/IDEA-TTS).**
 
 ## Pre-requisites
+I’m sorry I wasn’t able to merge the virtual environments of YourTTS and VITS. If you have a solution, please let me know.
 1. Clone this repository
 2. Install python requirements.
    1. You may need first to install the requirements of the [YourTTS](https://github.com/coqui-ai/TTS) to extract speaker embeddings by:
