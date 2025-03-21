@@ -53,7 +53,7 @@ $ CUDA_VISIBLE_DEVICES=0 python train.py -c config.json -m checkpoints/IDEA-TTS
    $ conda activate yourtts
    $ CUDA_VISIBLE_DEVICES=0 python inference_tts.py --checkpoint_file [checkpoint file path] --output_wavs_dir [output dir path]
    ```
-   You can download the pretrained weights we provide. Generated wav files are saved in the `[output dir path]`. Here is an example:
+   You can use the pretrained weights we provide. Generated wav files are saved in the `[output dir path]`. Here is an example:
    ```
    $ CUDA_VISIBLE_DEVICES=0 python inference_tts.py --checkpoint_file checkpoints/ckpt_tts/model.pth  --output_wavs_dir generated_files/EA-TTS
    ```
