@@ -1,1 +1,1 @@
-Move the pretrained checkpooints downloaded from [https://drive.google.com/drive/folders/1hGdJFUOwSrN8ClieUSvfIXyxIcilOMCo?usp=share_link](https://drive.google.com/drive/folders/1hGdJFUOwSrN8ClieUSvfIXyxIcilOMCo?usp=share_link) here.
+Download the [pretrained checkpoints](https://drive.google.com/drive/folders/1hGdJFUOwSrN8ClieUSvfIXyxIcilOMCo?usp=share_link) and move them here.
